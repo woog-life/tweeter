@@ -1,0 +1,30 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: twitter-updater
+  namespace: wooglife
+spec:
+  schedule: "* */2 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: twitter-updater
+            image: ghcr.io/woog-life/twitter-updater
+            envFrom:
+            - secretRef:
+                name: telegram-token
+            - configMapRef:
+                name: lake-uuids
+            - configMapRef:
+                name: twitterupdater-config
+            - configMapRef:
+                name: twitter-secrets
+            command:
+            - python
+            - main.py
+          restartPolicy: Never
