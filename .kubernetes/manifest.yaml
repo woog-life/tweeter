@@ -7,7 +7,6 @@ spec:
   schedule: "* */2 * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
-  suspend: true
   jobTemplate:
     spec:
       template:
