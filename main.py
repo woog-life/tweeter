@@ -9,6 +9,8 @@ from typing import Tuple, Union, List
 import requests
 import tweepy
 import urllib3
+# noinspection PyPackageRequirements
+# it is there (python-telegram-bot)
 from telegram import Bot
 
 BACKEND_URL = os.getenv("BACKEND_URL") or "https://api.woog.life"
