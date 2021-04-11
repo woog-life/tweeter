@@ -3,7 +3,7 @@ name: Build/Publish docker image
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build_push_docker:
@@ -17,9 +17,9 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build the tagged Docker image
-        run: docker build -t ghcr.io/woog-life/twitter-updater:${GITHUB_SHA} .
+        run: docker build -t ghcr.io/woog-life/tweeter:${GITHUB_SHA} .
       - name: Push the tagged Docker image
-        run: docker push ghcr.io/woog-life/twitter-updater:${GITHUB_SHA}
+        run: docker push ghcr.io/woog-life/tweeter:${GITHUB_SHA}
   deploy:
     name: "Publish to k8s"
     runs-on: ubuntu-latest

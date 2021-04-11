@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: twitter-updater
+  name: tweeter
   namespace: wooglife
 spec:
   schedule: "* */2 * * *"
@@ -13,8 +13,8 @@ spec:
       template:
         spec:
           containers:
-          - name: twitter-updater
-            image: ghcr.io/woog-life/twitter-updater
+          - name: tweeter
+            image: ghcr.io/woog-life/tweeter:{{TAG}}
             envFrom:
             - secretRef:
                 name: telegram-token
