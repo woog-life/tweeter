@@ -68,7 +68,7 @@ def get_temperature() -> Tuple[bool, Union[Tuple[float, str], str]]:
             return False, "`data` is null"
 
         logger.debug(f"Extracting time/temperature from data ({data})")
-        return True, (float(data.get("temperature")), data.get("time"))
+        return True, (float(data.get("preciseTemperature")), data.get("time"))
     else:
         return False, f"Request to backend was unsuccessful: {response.content}"
 
