@@ -85,7 +85,7 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
 
     temperature = round(temperature, 2)
     time = datetime.fromisoformat(isotime).strftime("%H:%M %d.%m.%Y")
-    message = f"Der Woog hat eine Temperatur von {temperature}°C ({time})"
+    message = f"Der Woog hat eine Temperatur von {temperature}°C ({time}) #woog #wooglife #darmstadt"
     logger.debug(f"updating status with: `{message}`")
     api.update_status(message)
 
