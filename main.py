@@ -76,6 +76,13 @@ def get_temperature() -> Tuple[bool, Union[Tuple[float, str], str]]:
 def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]:
     logger = create_logger(inspect.currentframe().f_code.co_name)
 
+    temperature = round(temperature, 2)
+    time: datetime = datetime.fromisoformat(isotime)
+    time_formatted = time.strftime("%H:%M %d.%m.%Y")
+
+    if (datetime.now() - time).seconds / 60 > 115:
+        return False, "last timestamp is older than 115 minutes"
+
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 
@@ -83,9 +90,7 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
     if not api.verify_credentials():
         return False, "Couldn't verify credentials"
 
-    temperature = round(temperature, 2)
-    time = datetime.fromisoformat(isotime).strftime("%H:%M %d.%m.%Y")
-    message = f"Der Woog hat eine Temperatur von {temperature}°C ({time}) #woog #wooglife #darmstadt"
+    message = f"Der Woog hat eine Temperatur von {temperature}°C ({time_formatted}) #woog #wooglife #darmstadt"
     logger.debug(f"updating status with: `{message}`")
     api.update_status(message)
 
