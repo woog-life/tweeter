@@ -45,4 +45,4 @@ jobs:
           format: markdown
           to: ${{ secrets.CI_FAILURE_TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_CI_TOKEN_RAW }}
-          args: job failed in woog-life/scraper after push ([CI](https://github.com/woog-life/scraper/actions))
+          args: job failed in woog-life/tweeter after push ([CI](https://github.com/woog-life/tweeter/actions))
