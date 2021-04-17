@@ -4,7 +4,7 @@ metadata:
   name: tweeter
   namespace: wooglife
 spec:
-  schedule: "0 */2 * * *"
+  schedule: "1 */2 * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
