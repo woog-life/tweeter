@@ -33,3 +33,16 @@ jobs:
         with:
           kubeconfig: ${{ secrets.KUBECONFIG }}
           args: apply -f .kubernetes/manifest.yaml
+  alert:
+    name: "alert on failure"
+    runs-on: ubuntu-latest
+    needs: [ build_push_docker, deploy ]
+    if: failure()
+    steps:
+      - uses: appleboy/telegram-action@master
+        name: send failure alert
+        with:
+          format: markdown
+          to: ${{ secrets.CI_FAILURE_TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_CI_TOKEN_RAW }}
+          args: job failed in woog-life/scraper after push ([CI](https://github.com/woog-life/scraper/actions))
