@@ -77,7 +77,7 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
     logger = create_logger(inspect.currentframe().f_code.co_name)
 
     temperature = round(temperature, 2)
-    time: datetime = datetime.fromisoformat(isotime)
+    time: datetime = datetime.fromisoformat(isotime.replace("Z", ""))
     time_formatted = time.strftime("%H:%M %d.%m.%Y")
 
     if (datetime.now() - time).seconds / 60 > 115:
