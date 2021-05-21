@@ -3,7 +3,7 @@ import logging
 import os
 import socket
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Tuple, Union, List
 
 import pytz
@@ -79,11 +79,12 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
 
     temperature = round(temperature, 2)
     # time: datetime = datetime.fromisoformat(isotime.replace("Z", ""))
-    time = pytz.timezone("UTC").localize(datetime.fromisoformat(isotime.replace("Z", ""))).astimezone(pytz.timezone("Europe/Berlin"))
+    time = pytz.timezone("UTC").localize(datetime.fromisoformat(isotime.replace("Z", ""))).astimezone(
+        pytz.timezone("Europe/Berlin"))
 
     time_formatted = time.strftime("%H:%M %d.%m.%Y")
 
-    if (datetime.now() - time).seconds / 60 > 115:
+    if (datetime.now(tz=timezone.utc) - time).seconds / 60 > 115:
         return False, "last timestamp is older than 115 minutes"
 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
@@ -115,7 +116,6 @@ def main() -> Tuple[bool, str]:
 
 
 root_logger = create_logger("__main__")
-
 
 if not WOOG_UUID:
     root_logger.error("LARGE_WOOG_UUID not defined in environment")
