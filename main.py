@@ -6,6 +6,7 @@ import sys
 from datetime import datetime
 from typing import Tuple, Union, List
 
+import pytz
 import requests
 import tweepy
 import urllib3
@@ -78,6 +79,8 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
 
     temperature = round(temperature, 2)
     time: datetime = datetime.fromisoformat(isotime.replace("Z", ""))
+    time = pytz.utc.localize(time).astimezone("Europe/Berlin")
+
     time_formatted = time.strftime("%H:%M %d.%m.%Y")
 
     if (datetime.now() - time).seconds / 60 > 115:
