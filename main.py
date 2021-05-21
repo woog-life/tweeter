@@ -78,8 +78,8 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
     logger = create_logger(inspect.currentframe().f_code.co_name)
 
     temperature = round(temperature, 2)
-    time: datetime = datetime.fromisoformat(isotime.replace("Z", ""))
-    time = pytz.utc.localize(time).astimezone("Europe/Berlin")
+    # time: datetime = datetime.fromisoformat(isotime.replace("Z", ""))
+    time = pytz.utc.localize(isotime).astimezone("Europe/Berlin")
 
     time_formatted = time.strftime("%H:%M %d.%m.%Y")
 
