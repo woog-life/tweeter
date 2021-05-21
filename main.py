@@ -79,7 +79,7 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
 
     temperature = round(temperature, 2)
     # time: datetime = datetime.fromisoformat(isotime.replace("Z", ""))
-    time = pytz.utc.localize(isotime).astimezone("Europe/Berlin")
+    time = pytz.utc.localize(isotime).astimezone(pytz.timezone("Europe/Berlin"))
 
     time_formatted = time.strftime("%H:%M %d.%m.%Y")
 
