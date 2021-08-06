@@ -84,7 +84,10 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
 
     time_formatted = time.strftime("%H:%M %d.%m.%Y")
 
-    if (datetime.now(tz=timezone.utc) - time).seconds / 60 > 115:
+    now = datetime.now(tz=timezone.utc).astimezone(pytz.timezone("Europe/Berlin"))
+    diff = (now - time).seconds
+    logger.debug(f"time: {time} | now: {now} | diff: {diff}")
+    if diff / 60 > 115:
         return False, "last timestamp is older than 115 minutes"
 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
