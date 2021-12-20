@@ -1,0 +1,35 @@
+namespace: wooglife
+
+cronjob:
+  name: tweeter
+  image: ghcr.io/woog-life/tweeter:__TAG__
+  imagePullPolicy: IfNotPresent
+  schedule: "CRON_TZ=UTC */30 * * * *"
+  backoffLimit: 0
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  restartPolicy: Never
+  labels:
+    app: tweeter
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  limit:
+    cpu: 300m
+    memory: 300Mi
+
+configmap:
+  backendPath: "lake/{}"
+  backendUrl: "http://backend:8080"
+  telegramChatlist: "139656428"
+
+secret:
+  telegram:
+    name: tweeter-telegram-error-token
+    telegramToken: __TELEGRAM_TOKEN_ERROR__
+  twitter:
+    name: tweeter-twitter
+    accessToken: __ACCESS_TOKEN__
+    accessTokenSecret: __ACCESS_TOKEN_SECRET__
+    consumerKey: __CONSUMER_KEY__
+    consumerSecret: __CONSUMER_SECRET__

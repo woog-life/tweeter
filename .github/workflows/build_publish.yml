@@ -1,4 +1,4 @@
-name: Build/Publish docker image
+name: Build and deploy
 
 on:
   push:
@@ -6,10 +6,22 @@ on:
       - master
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: sed -i -e "s#__TAG__#${GITHUB_SHA}#g" values.yaml
+      - uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm lint
+      - uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm lint --strict
+
   build_push_docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -20,29 +32,20 @@ jobs:
         run: docker build -t ghcr.io/woog-life/tweeter:${GITHUB_SHA} .
       - name: Push the tagged Docker image
         run: docker push ghcr.io/woog-life/tweeter:${GITHUB_SHA}
+
   deploy:
-    name: "Publish to k8s"
     runs-on: ubuntu-latest
-    needs: build_push_docker
+    needs: [build_push_docker, lint]
     steps:
-      - uses: actions/checkout@v1
-      - name: update tag in manifest.yml
-        run: sed -i -e "s#{{TAG}}#$(echo ${GITHUB_SHA})#g" .kubernetes/manifest.yaml
-      - uses: danielr1996/kubectl-action@1.0.0
-        name: apply config
+      - uses: actions/checkout@v2
+      - run: sed -i -e "s#__TAG__#${GITHUB_SHA}#g" values.yaml
+      - run: sed -i -e "s#__TELEGRAM_TOKEN_ERROR__#${{ secrets.TELEGRAM_TOKEN_ERROR }}#g" values.yaml
+      - run: sed -i -e "s/__CONSUMER_KEY__/${{ secrets.TWITTER_CONSUMER_KEY }}/g" values.yaml
+      - run: sed -i -e "s/__CONSUMER_SECRET__/${{ secrets.TWITTER_CONSUMER_SECRET }}/g" values.yaml
+      - run: sed -i -e "s/__ACCESS_TOKEN__/${{ secrets.TWITTER_ACCESS_TOKEN }}/g" values.yaml
+      - run: sed -i -e "s/__ACCESS_TOKEN_SECRET__/${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}/g" values.yaml
+      - name: install helm chart
+        uses: WyriHaximus/github-action-helm3@v2
         with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-          args: apply -f .kubernetes/manifest.yaml
-  alert:
-    name: "alert on failure"
-    runs-on: ubuntu-latest
-    needs: [ build_push_docker, deploy ]
-    if: failure()
-    steps:
-      - uses: appleboy/telegram-action@master
-        name: send failure alert
-        with:
-          format: markdown
-          to: ${{ secrets.CI_FAILURE_TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_CI_TOKEN_RAW }}
-          args: job failed in woog-life/tweeter after push ([CI](https://github.com/woog-life/tweeter/actions))
+          exec: helm upgrade tweeter . --install --namespace=wooglife --atomic
+          kubeconfig: ${{ secrets.KUBECONFIG_RAW }}

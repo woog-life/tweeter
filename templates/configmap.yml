@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.config.name }}
+  namespace: {{ .Values.namespace }}
+data:
+  BACKEND_PATH: "{{ .Values.configmap.backendPath }}"
+  BACKEND_URL: "{{ .Values.configmap.backendUrl }}"
+  TELEGRAM_CHATLIST: "{{ .Values.configmap.telegramChatlist }}"

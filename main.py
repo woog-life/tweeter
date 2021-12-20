@@ -133,7 +133,7 @@ else:
 
     if not success:
         root_logger.error(f"Something went wrong ({message})")
-        token = os.getenv("TOKEN")
+        token = os.getenv("BOT_ERROR_TOKEN")
         chatlist = os.getenv("TELEGRAM_CHATLIST") or ""
         send_telegram_alert(message, token=token, chatlist=chatlist.split(","))
         sys.exit(1)
