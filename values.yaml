@@ -4,7 +4,7 @@ cronjob:
   name: tweeter
   image: ghcr.io/woog-life/tweeter:__TAG__
   imagePullPolicy: IfNotPresent
-  schedule: "CRON_TZ=UTC */30 * * * *"
+  schedule: "CRON_TZ=UTC 1 */2 * * *"
   backoffLimit: 0
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
