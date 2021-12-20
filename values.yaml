@@ -19,6 +19,7 @@ cronjob:
     memory: 300Mi
 
 configmap:
+  name: tweeter-config
   backendPath: "lake/{}"
   backendUrl: "http://backend:8080"
   telegramChatlist: "139656428"
