@@ -3,10 +3,10 @@ import logging
 import os
 import socket
 import sys
+import zoneinfo
 from datetime import datetime, timezone
 from typing import Tuple, Union, List
 
-import pytz
 import requests
 import tweepy
 import urllib3
@@ -78,16 +78,17 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
     logger = create_logger(inspect.currentframe().f_code.co_name)
 
     temperature = round(temperature, 2)
-    # time: datetime = datetime.fromisoformat(isotime.replace("Z", ""))
-    time = pytz.timezone("UTC").localize(datetime.fromisoformat(isotime.replace("Z", ""))).astimezone(
-        pytz.timezone("Europe/Berlin"))
-
+    fromtime = datetime.fromisoformat(isotime.replace("Z", ""))
+    utctime = datetime(fromtime.year, fromtime.month, fromtime.day, fromtime.hour, fromtime.minute, fromtime.second,
+                       tzinfo=zoneinfo.ZoneInfo("UTC"))
+    time = utctime.astimezone(zoneinfo.ZoneInfo("Europe/Berlin"))
+    time_formatted = time.strftime("%H:%M %d.%m.%Y")
     time_formatted = time.strftime("%H:%M %d.%m.%Y")
 
-    now = datetime.now(tz=timezone.utc).astimezone(pytz.timezone("Europe/Berlin"))
-    diff = (now - time).total_seconds()
-    logger.debug(f"time: {time} | now: {now} | diff: {diff}")
-    if diff / 60 > 115:
+    now = datetime.now(tz=timezone.utc).astimezone(zoneinfo.ZoneInfo("Europe/Berlin"))
+    diff_minutes = (now - time).total_seconds() / 60
+    logger.debug(f"time: {time} | now: {now} | diff (min): {diff_minutes}")
+    if diff_minutes > 115:
         return False, "last timestamp is older than 115 minutes"
 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
