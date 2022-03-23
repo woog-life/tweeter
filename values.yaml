@@ -22,7 +22,7 @@ configmap:
   name: tweeter-config
   backendPath: "lake/{}"
   backendUrl: "http://backend:8080"
-  telegramChatlist: "139656428"
+  telegramChatlist: "139656428,389582243"
 
 secret:
   telegram:
