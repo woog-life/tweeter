@@ -44,6 +44,7 @@ jobs:
       - run: sed -i -e "s/__CONSUMER_SECRET__/${{ secrets.TWITTER_CONSUMER_SECRET }}/g" values.yaml
       - run: sed -i -e "s/__ACCESS_TOKEN__/${{ secrets.TWITTER_ACCESS_TOKEN }}/g" values.yaml
       - run: sed -i -e "s/__ACCESS_TOKEN_SECRET__/${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}/g" values.yaml
+      - run: sed -i -e "s/__PAGERDUTY_ROUTING_KEY__/${{ secrets.PAGERDUTY_ROUTING_KEY }}/g" values.yaml
       - name: install helm chart
         uses: WyriHaximus/github-action-helm3@v2
         with:

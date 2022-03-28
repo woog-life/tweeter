@@ -1,11 +1,13 @@
 import inspect
+import json
 import logging
 import os
 import socket
 import sys
 import zoneinfo
 from datetime import datetime, timezone
-from typing import Tuple, Union, List
+from http.client import HTTPSConnection
+from typing import Tuple, Union, List, Dict, Any, Optional
 
 import requests
 import tweepy
@@ -21,6 +23,36 @@ CONSUMER_KEY = os.getenv("CONSUMER_KEY")
 CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
+
+ROUTING_KEY = os.getenv("PAGERDUTY_ROUTING_KEY")
+
+
+def build_pagerduty_alert(title: str, alert_body: str, dedup: str) -> Dict[str, Any]:
+    return {
+        "routing_key": ROUTING_KEY,
+        "event_action": "trigger",
+        "dedup_key": dedup,
+        "payload": {
+            "summary": title,
+            "source": "tweeter",
+            "severity": "critical",
+            "custom_details": {
+                "alert_body": alert_body,
+            },
+        },
+    }
+
+
+def send_pagerduty_alert(title: str, alert_body: str, dedup: Optional[str] = None) -> None:
+    if dedup is None:
+        dedup = str(datetime.utcnow().timestamp())
+    url = "events.pagerduty.com"
+    route = "/v2/enqueue"
+
+    conn = HTTPSConnection(host=url, port=443)
+    conn.request("POST", route, json.dumps(build_pagerduty_alert(title, alert_body, dedup)))
+    result = conn.getresponse()
+    print(result.read())
 
 
 def create_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
@@ -123,6 +155,8 @@ root_logger = create_logger("__main__")
 
 if not WOOG_UUID:
     root_logger.error("LARGE_WOOG_UUID not defined in environment")
+
+
 if not (CONSUMER_KEY and CONSUMER_SECRET and ACCESS_TOKEN and ACCESS_TOKEN_SECRET):
     root_logger.error("Some twitter key/secret is not defined in environment")
 else:
@@ -137,4 +171,5 @@ else:
         token = os.getenv("BOT_ERROR_TOKEN")
         chatlist = os.getenv("TELEGRAM_CHATLIST") or ""
         send_telegram_alert(message, token=token, chatlist=chatlist.split(","))
+        send_pagerduty_alert("tweeter failure", message)
         sys.exit(1)

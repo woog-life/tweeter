@@ -34,3 +34,5 @@ secret:
     accessTokenSecret: __ACCESS_TOKEN_SECRET__
     consumerKey: __CONSUMER_KEY__
     consumerSecret: __CONSUMER_SECRET__
+  pagerduty:
+    routingKey: __PAGERDUTY_ROUTING_KEY__
