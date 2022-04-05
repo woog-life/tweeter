@@ -115,7 +115,6 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
                        tzinfo=zoneinfo.ZoneInfo("UTC"))
     time = utctime.astimezone(zoneinfo.ZoneInfo("Europe/Berlin"))
     time_formatted = time.strftime("%H:%M %d.%m.%Y")
-    time_formatted = time.strftime("%H:%M %d.%m.%Y")
 
     now = datetime.now(tz=timezone.utc).astimezone(zoneinfo.ZoneInfo("Europe/Berlin"))
     diff_minutes = (now - time).total_seconds() / 60
