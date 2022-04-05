@@ -122,7 +122,7 @@ def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]
     if diff_minutes > 115:
         return False, "last timestamp is older than 115 minutes"
 
-    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth = tweepy.OAuth1UserHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 
     api = tweepy.API(auth)
