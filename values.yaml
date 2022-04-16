@@ -35,4 +35,5 @@ secret:
     consumerKey: __CONSUMER_KEY__
     consumerSecret: __CONSUMER_SECRET__
   pagerduty:
+    name: pagerduty-routingkey
     routingKey: __PAGERDUTY_ROUTING_KEY__
