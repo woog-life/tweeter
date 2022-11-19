@@ -86,6 +86,7 @@ def get_temperature() -> Tuple[bool, Union[Tuple[float, str], str]]:
     logger = create_logger(inspect.currentframe().f_code.co_name)
     path = BACKEND_PATH.format(WOOG_UUID)
     url = "/".join([BACKEND_URL, path])
+    url += "?precision=2&formatRegion=DE"
 
     logger.debug(f"Calling {url}")
     try:
