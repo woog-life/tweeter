@@ -20,7 +20,7 @@ cronjob:
 
 configmap:
   name: tweeter-config
-  backendPath: "lake/{}"
+  backendPath: "lake/{}/temperature"
   backendUrl: "http://backend:8080"
   telegramChatlist: "139656428,389582243"
 

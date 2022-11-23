@@ -17,7 +17,7 @@ import urllib3
 from telegram import Bot
 
 BACKEND_URL = os.getenv("BACKEND_URL") or "https://api.woog.life"
-BACKEND_PATH = os.getenv("BACKEND_PATH") or "lake/{}"
+BACKEND_PATH = os.getenv("BACKEND_PATH") or "lake/{}/temperature"
 WOOG_UUID = os.getenv("LARGE_WOOG_UUID")
 CONSUMER_KEY = os.getenv("CONSUMER_KEY")
 CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
@@ -82,7 +82,7 @@ def send_telegram_alert(message: str, token: str, chatlist: List[str]):
         Bot(token=token).send_message(chat_id=user, text=f"Error while executing laketweet: {message}")
 
 
-def get_temperature() -> Tuple[bool, Union[Tuple[float, str], str]]:
+def get_temperature() -> Tuple[bool, Union[Tuple[str, str], str]]:
     logger = create_logger(inspect.currentframe().f_code.co_name)
     path = BACKEND_PATH.format(WOOG_UUID)
     url = "/".join([BACKEND_URL, path])
@@ -97,20 +97,15 @@ def get_temperature() -> Tuple[bool, Union[Tuple[float, str], str]]:
         return False, f"Error while connecting to backend: {e}"
 
     if response.ok:
-        data = response.json().get("data")
-        if not data:
-            return False, "`data` is null"
-
-        logger.debug(f"Extracting time/temperature from data ({data})")
-        return True, (float(data.get("preciseTemperature")), data.get("time"))
+        data = response.json()
+        return True, (data.get("preciseTemperature"), data.get("time"))
     else:
         return False, f"Request to backend was unsuccessful: {response.content}"
 
 
-def send_temperature_tweet(temperature: float, isotime: str) -> Tuple[bool, str]:
+def send_temperature_tweet(temperature: str, isotime: str) -> Tuple[bool, str]:
     logger = create_logger(inspect.currentframe().f_code.co_name)
 
-    temperature = round(temperature, 2)
     fromtime = datetime.fromisoformat(isotime.replace("Z", ""))
     utctime = datetime(fromtime.year, fromtime.month, fromtime.day, fromtime.hour, fromtime.minute, fromtime.second,
                        tzinfo=zoneinfo.ZoneInfo("UTC"))
