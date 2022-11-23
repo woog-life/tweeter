@@ -156,15 +156,15 @@ if not (CONSUMER_KEY and CONSUMER_SECRET and ACCESS_TOKEN and ACCESS_TOKEN_SECRE
     root_logger.error("Some twitter key/secret is not defined in environment")
 else:
     try:
-        success, message = main()
+        success, error_message = main()
     except Exception as e:
         success = False
-        message = f"{e}"
+        error_message = f"{e}"
 
     if not success:
-        root_logger.error(f"Something went wrong ({message})")
+        root_logger.error(f"Something went wrong ({error_message})")
         token = os.getenv("BOT_ERROR_TOKEN")
         chatlist = os.getenv("TELEGRAM_CHATLIST") or ""
-        send_telegram_alert(message, token=token, chatlist=chatlist.split(","))
-        send_pagerduty_alert("tweeter failure", message)
+        send_telegram_alert(error_message, token=token, chatlist=chatlist.split(","))
+        send_pagerduty_alert("tweeter failure", error_message)
         sys.exit(1)
