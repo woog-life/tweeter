@@ -92,7 +92,7 @@ def get_temperature() -> Tuple[bool, Union[Tuple[str, str], str]]:
     try:
         response = requests.get(url)
         logger.debug(f"success: {response.ok} | content: {response.content}")
-    except (requests.exceptions.ConnectionError, socket.gaierror, urllib3.exceptions.MaxRetryError):
+    except (requests.exceptions.ConnectionError, socket.gaierror, urllib3.exceptions.MaxRetryError) as e:
         logger.exception(f"Error while connecting to backend ({url})", exc_info=True)
         return False, f"Error while connecting to backend: {e}"
 
