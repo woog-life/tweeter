@@ -12,6 +12,7 @@ from typing import Tuple, Union, List, Dict, Any, Optional
 import requests
 import tweepy
 import urllib3
+from mastodon import Mastodon
 # noinspection PyPackageRequirements
 # it is there (python-telegram-bot)
 from telegram import Bot
@@ -103,7 +104,7 @@ def get_temperature() -> Tuple[bool, Union[Tuple[str, str], str]]:
         return False, f"Request to backend was unsuccessful: {response.content}"
 
 
-def send_temperature_tweet(temperature: str, isotime: str) -> Tuple[bool, str]:
+def format_twoot(temperature: str, isotime: str) -> Tuple[bool, str]:
     logger = create_logger(inspect.currentframe().f_code.co_name)
 
     fromtime = datetime.fromisoformat(isotime.replace("Z", ""))
@@ -118,6 +119,12 @@ def send_temperature_tweet(temperature: str, isotime: str) -> Tuple[bool, str]:
     if diff_minutes > 115:
         return False, "last timestamp is older than 115 minutes"
 
+    return True, f"Der Woog hat eine Temperatur von {temperature}°C ({time_formatted}) #woog #wooglife #darmstadt"
+
+
+def send_temperature_tweet(message: str) -> Tuple[bool, str]:
+    logger = create_logger(inspect.currentframe().f_code.co_name)
+
     auth = tweepy.OAuth1UserHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 
@@ -125,22 +132,39 @@ def send_temperature_tweet(temperature: str, isotime: str) -> Tuple[bool, str]:
     if not api.verify_credentials():
         return False, "Couldn't verify credentials"
 
-    message = f"Der Woog hat eine Temperatur von {temperature}°C ({time_formatted}) #woog #wooglife #darmstadt"
     logger.debug(f"updating status with: `{message}`")
     api.update_status(message)
 
     return True, ""
 
 
+def send_temperature_toot(message: str) -> Tuple[bool, str]:
+    access_token = os.getenv("MASTODON_ACCESS_TOKEN")
+    instance_url = os.getenv("MASTODON_INSTANCE_URL", "https://mastodon.social")
+    mastodon = Mastodon(api_base_url=instance_url, access_token=access_token)
+
+    mastodon.toot(message)
+
+    return True, ""
+
+
 def main() -> Tuple[bool, str]:
     logger = create_logger(inspect.currentframe().f_code.co_name)
+    # noinspection PyShadowingNames
     success, value = get_temperature()
 
     if success:
         logger.debug("Success from api")
         temperature, time = value
         logger.debug(f"Successfully extracted time/temp from api ({time} {temperature})")
-        return send_temperature_tweet(temperature, time)
+        # noinspection PyShadowingNames
+        success, message = format_twoot(temperature, time)
+        if not success:
+            return success, message
+        tweetSuccess, tweetMessage = send_temperature_tweet(message)
+        tootSuccess, tootMessage = send_temperature_toot(message)
+        message = "\n".join([tweetMessage, tootMessage])
+        return tweetSuccess and tootSuccess, message
 
     logger.error(f"Couldn't retrieve temp/time from api: {value}")
     return False, value
@@ -150,7 +174,6 @@ root_logger = create_logger("__main__")
 
 if not WOOG_UUID:
     root_logger.error("LARGE_WOOG_UUID not defined in environment")
-
 
 if not (CONSUMER_KEY and CONSUMER_SECRET and ACCESS_TOKEN and ACCESS_TOKEN_SECRET):
     root_logger.error("Some twitter key/secret is not defined in environment")
@@ -166,5 +189,5 @@ else:
         token = os.getenv("BOT_ERROR_TOKEN")
         chatlist = os.getenv("TELEGRAM_CHATLIST") or ""
         send_telegram_alert(error_message, token=token, chatlist=chatlist.split(","))
-        send_pagerduty_alert("tweeter failure", error_message)
+        send_pagerduty_alert("twooter failure", error_message)
         sys.exit(1)

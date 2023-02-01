@@ -7,3 +7,4 @@ data:
   BACKEND_PATH: "{{ .Values.configmap.backendPath }}"
   BACKEND_URL: "{{ .Values.configmap.backendUrl }}"
   TELEGRAM_CHATLIST: "{{ .Values.configmap.telegramChatlist }}"
+  MASTODON_INSTANCE_URL: "{{ .Values.configmap.mastodon.instanceUrl }}"

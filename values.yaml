@@ -23,6 +23,8 @@ configmap:
   backendPath: "lake/{}/temperature"
   backendUrl: "http://backend:8080"
   telegramChatlist: "139656428,389582243"
+  mastodon:
+    instanceUrl: "https://mastodon.social"
 
 secret:
   telegram:
@@ -37,3 +39,5 @@ secret:
   pagerduty:
     name: pagerduty-routingkey
     routingKey: __PAGERDUTY_ROUTING_KEY__
+  mastodon:
+    accessToken: __MASTODON_ACCESS_TOKEN__
