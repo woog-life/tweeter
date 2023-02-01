@@ -1,3 +1,4 @@
+import asyncio
 import inspect
 import json
 import logging
@@ -70,7 +71,7 @@ def create_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
     return logger
 
 
-def send_telegram_alert(message: str, token: str, chatlist: List[str]):
+async def send_telegram_alert(message: str, token: str, chatlist: List[str]):
     logger = create_logger(inspect.currentframe().f_code.co_name)
     if not token:
         logger.error("TOKEN not defined in environment, skip sending telegram message")
@@ -80,7 +81,7 @@ def send_telegram_alert(message: str, token: str, chatlist: List[str]):
         logger.error("chatlist is empty (env var: TELEGRAM_CHATLIST)")
 
     for user in chatlist:
-        Bot(token=token).send_message(chat_id=user, text=f"Error while executing laketweet: {message}")
+        await Bot(token=token).send_message(chat_id=user, text=f"Error while executing laketweet: {message}")
 
 
 def get_temperature() -> Tuple[bool, Union[Tuple[str, str], str]]:
@@ -188,6 +189,6 @@ else:
         root_logger.error(f"Something went wrong ({error_message})")
         token = os.getenv("BOT_ERROR_TOKEN")
         chatlist = os.getenv("TELEGRAM_CHATLIST") or ""
-        send_telegram_alert(error_message, token=token, chatlist=chatlist.split(","))
+        asyncio.run(send_telegram_alert(error_message, token=token, chatlist=chatlist.split(",")))
         send_pagerduty_alert("twooter failure", error_message)
         sys.exit(1)
