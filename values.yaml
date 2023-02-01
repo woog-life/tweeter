@@ -40,4 +40,5 @@ secret:
     name: pagerduty-routingkey
     routingKey: __PAGERDUTY_ROUTING_KEY__
   mastodon:
+    name: tweeter-mastodon
     accessToken: __MASTODON_ACCESS_TOKEN__
