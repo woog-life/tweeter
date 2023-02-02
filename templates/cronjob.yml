@@ -30,6 +30,8 @@ spec:
                   name: {{ .Values.secret.telegram.name }}
               - secretRef:
                   name: {{ .Values.secret.twitter.name }}
+              - secretRef:
+                  name: {{ .Values.secret.mastodon.name }}
               - configMapRef:
                   name: {{ .Values.configmap.name }}
               - configMapRef:
