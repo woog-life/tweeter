@@ -162,7 +162,10 @@ def main() -> Tuple[bool, str]:
         success, message = format_twoot(temperature, time)
         if not success:
             return success, message
-        tweetSuccess, tweetMessage = send_temperature_tweet(message)
+        try:
+            tweetSuccess, tweetMessage = send_temperature_tweet(message)
+        except Exception as e:
+            tweetSuccess, tweetMessage = False, "\n".join(e.args)
         tootSuccess, tootMessage = send_temperature_toot(message)
         message = "\n".join([tweetMessage, tootMessage])
         return tweetSuccess and tootSuccess, message
