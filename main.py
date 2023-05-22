@@ -124,17 +124,17 @@ def format_twoot(temperature: str, isotime: str) -> Tuple[bool, str]:
 
 
 def send_temperature_tweet(message: str) -> Tuple[bool, str]:
-    logger = create_logger(inspect.currentframe().f_code.co_name)
-
-    auth = tweepy.OAuth1UserHandler(CONSUMER_KEY, CONSUMER_SECRET)
-    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-
-    api = tweepy.API(auth)
-    if not api.verify_credentials():
-        return False, "Couldn't verify credentials"
-
-    logger.debug(f"updating status with: `{message}`")
-    api.update_status(message)
+    # logger = create_logger(inspect.currentframe().f_code.co_name)
+    #
+    # auth = tweepy.OAuth1UserHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    # auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    #
+    # api = tweepy.API(auth)
+    # if not api.verify_credentials():
+    #     return False, "Couldn't verify credentials"
+    #
+    # logger.debug(f"updating status with: `{message}`")
+    # api.update_status(message)
 
     return True, ""
 
