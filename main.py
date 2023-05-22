@@ -84,11 +84,11 @@ async def send_telegram_alert(message: str, token: str, chatlist: List[str]):
         await Bot(token=token).send_message(chat_id=user, text=f"Error while executing laketweet: {message}")
 
 
-def get_temperature() -> Tuple[bool, Union[Tuple[str, str], str]]:
+def get_temperature(*, precision: int = 2, format_region: str = "DE") -> Tuple[bool, Union[Tuple[str, str], str]]:
     logger = create_logger(inspect.currentframe().f_code.co_name)
     path = BACKEND_PATH.format(WOOG_UUID)
     url = "/".join([BACKEND_URL, path])
-    url += "?precision=2&formatRegion=DE"
+    url += f"?precision={precision}&formatRegion={format_region}"
 
     logger.debug(f"Calling {url}")
     try:
