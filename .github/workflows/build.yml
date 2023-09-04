@@ -9,6 +9,6 @@ jobs:
   build_push_docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build the tagged Docker image
         run: docker build -t ghcr.io/woog-life/tweeter:${GITHUB_SHA} .
