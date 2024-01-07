@@ -22,23 +22,10 @@ configmap:
   name: tweeter-config
   backendPath: "lake/{}/temperature"
   backendUrl: "http://backend:8080"
-  telegramChatlist: "139656428,389582243"
   mastodon:
     instanceUrl: "https://mastodon.social"
 
 secret:
-  telegram:
-    name: tweeter-telegram-error-token
-    telegramToken: __TELEGRAM_TOKEN_ERROR__
-  twitter:
-    name: tweeter-twitter
-    accessToken: __ACCESS_TOKEN__
-    accessTokenSecret: __ACCESS_TOKEN_SECRET__
-    consumerKey: __CONSUMER_KEY__
-    consumerSecret: __CONSUMER_SECRET__
-  pagerduty:
-    name: pagerduty-routingkey
-    routingKey: __PAGERDUTY_ROUTING_KEY__
   mastodon:
     name: tweeter-mastodon
     accessToken: __MASTODON_ACCESS_TOKEN__
